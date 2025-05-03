@@ -1,7 +1,8 @@
 from screens.ClubSelectionScreen import MasterDetailScreen
 from screens.TeamConfirmScreen import ClubChosen
 from screens.ManagerScreen import ManagerScreen
-from textual.app import App
+from textual.app import App, ComposeResult
+from textual.widgets import Footer
 
 
 class ManagerApp(App):
@@ -12,6 +13,9 @@ class ManagerApp(App):
 
     def on_club_chosen(self, message: ClubChosen):
         self.push_screen(ManagerScreen(message.club_name))
+
+    def compose(self) -> ComposeResult:
+        yield Footer()
 
 
 if __name__ == "__main__":
