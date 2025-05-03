@@ -7,7 +7,7 @@ from textual.containers import Horizontal
 from textual.screen import Screen
 
 # Import the shared confirmation dialog
-from screens.TeamConfirmScreen import TeamConfirmScreen, ClubChosen
+from screens.TeamConfirmScreen import TeamConfirmScreen
 
 DB_PATH = Path(__file__).parent.parent / "data" / "game.db"
 
