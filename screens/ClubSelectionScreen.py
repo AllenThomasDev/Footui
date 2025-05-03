@@ -1,34 +1,85 @@
+import sqlite3
+from pathlib import Path
+
 from textual.app import ComposeResult
 from textual.widgets import Static, DataTable
+from textual.containers import Horizontal
 from textual.screen import Screen
-from data.clubs import clubs
-from textual.message import Message
+
+# Import the shared confirmation dialog
+from screens.TeamConfirmScreen import TeamConfirmScreen, ClubChosen
+
+DB_PATH = Path(__file__).parent.parent / "data" / "game.db"
 
 
-class ClubChosen(Message):
-    def __init__(self, club_name: str):
-        self.club_name = club_name
-        super().__init__()
+class MasterDetailScreen(Screen):
+    BINDINGS = [
+        ("tab", "switch_focus", "Switch focus"),
+        ("escape", "switch_focus", "Back to leagues"),
+    ]
 
-
-class ClubSelectionScreen(Screen):
     def compose(self) -> ComposeResult:
         yield Static(
-            "⚽ Get ready for your managerial adventure!\n\nTo begin, choose the club you want to manage:\n",
-            id="intro",
+            "⚽ Select a league (left); clubs update automatically (right).", id="intro"
         )
-        table = DataTable(id="club-table")
-        table.add_columns("Club", "History")
-        for club, history in clubs:
-            table.add_row(club, history)
-        yield table
+        with Horizontal():
+            self.league_table = DataTable(id="league-table")
+            self.league_table.add_columns("ID", "League")
+            yield self.league_table
+
+            self.club_table = DataTable(id="club-table")
+            self.club_table.add_column("Club")
+            yield self.club_table
 
     def on_mount(self):
-        self.query_one(DataTable).cursor_type = "row"
-        self.query_one(DataTable).focus()
+        # Enable arrow-key navigation for both tables
+        for tbl in (self.league_table, self.club_table):
+            tbl.cursor_type = "row"
+
+        # Populate leagues from the database
+        with sqlite3.connect(DB_PATH) as conn:
+            for lid, name in conn.execute(
+                "SELECT id, name FROM leagues ORDER BY name;"
+            ):
+                self.league_table.add_row(str(lid), name)
+
+        # Start focus on the league table
+        self.league_table.focus()
+
+    def on_show(self) -> None:
+        # Restore focus after any overlay
+        if self.club_table.row_count > 0:
+            self.club_table.focus()
+        else:
+            self.league_table.focus()
+
+    def action_switch_focus(self) -> None:
+        # Toggle focus between the two tables
+        if self.league_table.has_focus:
+            self.club_table.focus()
+        else:
+            self.league_table.focus()
+
+    def on_data_table_row_highlighted(self, event: DataTable.RowHighlighted):
+        # Update clubs when the league selection changes
+        if event.data_table.id != "league-table":
+            return
+        league_id = int(self.league_table.get_row(event.row_key)[0])
+        self.club_table.clear()
+        with sqlite3.connect(DB_PATH) as conn:
+            for (club,) in conn.execute(
+                "SELECT name FROM teams WHERE league_id = ? ORDER BY name;",
+                (league_id,),
+            ):
+                self.club_table.add_row(club)
 
     def on_data_table_row_selected(self, event: DataTable.RowSelected):
-        table = self.query_one(DataTable)
-        row = table.get_row(event.row_key)
-        selected_club = row[0]  # First column is club name
-        self.post_message(ClubChosen(selected_club))
+        # Enter on league table toggles focus
+        if event.data_table.id == "league-table":
+            self.action_switch_focus()
+            return
+
+        # Enter on club table opens external TeamConfirmScreen
+        if event.data_table.id == "club-table":
+            club = self.club_table.get_row(event.row_key)[0]
+            self.app.push_screen(TeamConfirmScreen(club))
