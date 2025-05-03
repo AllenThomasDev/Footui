@@ -11,7 +11,6 @@ DB_PATH = Path(__file__).parent.parent / "data" / "game.db"
 
 
 class ClubSelectionScreen(Screen):
-    CSS_PATH = "../styles/clubselection.tcss"
     BINDINGS = [
         ("tab", "switch_focus", "Switch focus"),
         ("escape", "switch_focus", "Back to leagues"),
