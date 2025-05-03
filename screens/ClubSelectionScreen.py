@@ -6,12 +6,12 @@ from textual.containers import Horizontal
 from textual.screen import Screen
 
 # Import the shared confirmation dialog
-from screens.TeamConfirmScreen import TeamConfirmScreen
+from screens.TeamConfirmScreen import TeamConfirmModal
 
 DB_PATH = Path(__file__).parent.parent / "data" / "game.db"
 
 
-class MasterDetailScreen(Screen):
+class ClubSelectionScreen(Screen):
     BINDINGS = [
         ("tab", "switch_focus", "Switch focus"),
         ("escape", "switch_focus", "Back to leagues"),
@@ -84,7 +84,7 @@ class MasterDetailScreen(Screen):
         # Enter on club table opens external TeamConfirmScreen
         if event.data_table.id == "club-table":
             club = self.club_table.get_row(event.row_key)[0]
-            self.app.push_screen(TeamConfirmScreen(club))
+            self.app.push_screen(TeamConfirmModal(club))
 
     def action_up(self) -> None:
         if self.league_table.has_focus:

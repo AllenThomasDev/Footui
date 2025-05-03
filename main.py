@@ -1,4 +1,4 @@
-from screens.ClubSelectionScreen import MasterDetailScreen
+from screens.ClubSelectionScreen import ClubSelectionScreen
 from screens.TeamConfirmScreen import ClubChosen
 from screens.ManagerScreen import ManagerScreen
 from textual.app import App, ComposeResult
@@ -9,7 +9,7 @@ class ManagerApp(App):
     CSS_PATH = "styles/main.tcss"
 
     def on_mount(self):
-        self.push_screen(MasterDetailScreen())
+        self.push_screen(ClubSelectionScreen())
 
     def on_club_chosen(self, message: ClubChosen):
         self.push_screen(ManagerScreen(message.club_name))

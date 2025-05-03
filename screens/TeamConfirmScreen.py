@@ -11,7 +11,7 @@ class ClubChosen(Message):
         super().__init__()
 
 
-class TeamConfirmScreen(ModalScreen):
+class TeamConfirmModal(ModalScreen):
     """Modal to confirm team selection."""
 
     CSS_PATH = "../styles/modal.tcss"
