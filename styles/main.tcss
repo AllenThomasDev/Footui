@@ -1,0 +1,8 @@
+#intro, #welcome {
+    padding: 2;
+    text-align: center;
+}
+
+#club-table {
+    margin: 1 2;
+}

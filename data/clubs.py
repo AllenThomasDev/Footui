@@ -1,0 +1,23 @@
+# Dummy club data
+clubs = [
+    ("Arsenal", "Founded 1886"),
+    ("Manchester City", "Founded 1880"),
+    ("Liverpool", "Founded 1892"),
+    ("Manchester United", "Founded 1878"),
+    ("Chelsea", "Founded 1905"),
+    ("Tottenham", "Founded 1882"),
+    ("Newcastle United", "Founded 1892"),
+    ("Aston Villa", "Founded 1874"),
+    ("West Ham", "Founded 1895"),
+    ("Brighton", "Founded 1901"),
+    ("Brentford", "Founded 1889"),
+    ("Crystal Palace", "Founded 1905"),
+    ("Everton", "Founded 1878"),
+    ("Wolves", "Founded 1877"),
+    ("Fulham", "Founded 1879"),
+    ("Bournemouth", "Founded 1899"),
+    ("Nottingham Forest", "Founded 1865"),
+    ("Burnley", "Founded 1882"),
+    ("Sheffield United", "Founded 1889"),
+    ("Luton Town", "Founded 1885"),
+]
