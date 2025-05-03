@@ -1,8 +1,7 @@
 import sqlite3
 from pathlib import Path
 from textual.app import ComposeResult
-from textual.widgets import Static, DataTable, Footer
-from textual.containers import Horizontal
+from textual.widgets import Static, DataTable, Footer, TabPane, TabbedContent
 from textual.screen import Screen
 
 # Import the shared confirmation dialog
@@ -12,6 +11,7 @@ DB_PATH = Path(__file__).parent.parent / "data" / "game.db"
 
 
 class ClubSelectionScreen(Screen):
+    CSS_PATH = "../styles/clubselection.tcss"
     BINDINGS = [
         ("tab", "switch_focus", "Switch focus"),
         ("escape", "switch_focus", "Back to leagues"),
@@ -23,14 +23,16 @@ class ClubSelectionScreen(Screen):
         yield Static(
             "⚽ Select a league (left); clubs update automatically (right).", id="intro"
         )
-        with Horizontal():
-            self.league_table = DataTable(id="league-table")
-            self.league_table.add_columns("ID", "League")
-            yield self.league_table
+        with TabbedContent(id="ClubSelection"):
+            with TabPane("Leagues", id="leagues"):
+                self.league_table = DataTable(id="league-table")
+                self.league_table.add_columns("ID", "League")
+                yield self.league_table
 
-            self.club_table = DataTable(id="club-table")
-            self.club_table.add_column("Club")
-            yield self.club_table
+            with TabPane("Clubs", id="clubs"):
+                self.club_table = DataTable(id="club-table")
+                self.club_table.add_column("Club")
+                yield self.club_table
         yield Footer()
 
     def on_mount(self):
