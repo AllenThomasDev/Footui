@@ -1,8 +1,7 @@
 import sqlite3
 from pathlib import Path
-
 from textual.app import ComposeResult
-from textual.widgets import Static, DataTable
+from textual.widgets import Static, DataTable, Footer
 from textual.containers import Horizontal
 from textual.screen import Screen
 
@@ -16,6 +15,8 @@ class MasterDetailScreen(Screen):
     BINDINGS = [
         ("tab", "switch_focus", "Switch focus"),
         ("escape", "switch_focus", "Back to leagues"),
+        ("down, j", "down", "Scroll down"),
+        ("up, j", "up", "Scroll up"),
     ]
 
     def compose(self) -> ComposeResult:
@@ -30,6 +31,7 @@ class MasterDetailScreen(Screen):
             self.club_table = DataTable(id="club-table")
             self.club_table.add_column("Club")
             yield self.club_table
+        yield Footer()
 
     def on_mount(self):
         # Enable arrow-key navigation for both tables
@@ -39,7 +41,7 @@ class MasterDetailScreen(Screen):
         # Populate leagues from the database
         with sqlite3.connect(DB_PATH) as conn:
             for lid, name in conn.execute(
-                "SELECT id, name FROM leagues ORDER BY name;"
+                "SELECT id, name FROM leagues WHERE id < 6 ORDER BY id;"
             ):
                 self.league_table.add_row(str(lid), name)
 
@@ -83,3 +85,15 @@ class MasterDetailScreen(Screen):
         if event.data_table.id == "club-table":
             club = self.club_table.get_row(event.row_key)[0]
             self.app.push_screen(TeamConfirmScreen(club))
+
+    def action_up(self) -> None:
+        if self.league_table.has_focus:
+            self.league_table.action_cursor_up()
+        elif self.club_table.has_focus:
+            self.club_table.action_cursor_up()
+
+    def action_down(self) -> None:
+        if self.league_table.has_focus:
+            self.league_table.action_cursor_down()
+        elif self.club_table.has_focus:
+            self.club_table.action_cursor_down()
