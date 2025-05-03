@@ -1,0 +1,2 @@
+- Refactor screens into widgets
+- Figure out styling
